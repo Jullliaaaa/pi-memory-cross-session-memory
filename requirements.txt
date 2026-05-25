@@ -1,0 +1,7 @@
+# Python >= 3.10 required (developed with 3.11)
+# 核心（capture/store/retrieve/bm25）只用標準函式庫，無需任何套件。
+# 測試：
+pytest>=8.0
+
+# 任務二（選做）若做 hybrid retrieval，可用本地 embedding（與 HW3 相同）：
+# sentence-transformers>=2.7.0
