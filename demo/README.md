@@ -79,7 +79,7 @@ cat ~/.pi-memory.json
 
 ## 環境
 
-- OS:Linux（實驗室 GPU 機器）
+- OS:Linux
 - 本地 LLM:gpt-oss:20b（Ollama,MXFP4 量化,20.9B 參數,GPU 推論）
 - LLM context size:8192
 - 後端:Ollama（OpenAI 相容 endpoint localhost:11434/v1）
