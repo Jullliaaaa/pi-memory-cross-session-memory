@@ -36,4 +36,33 @@ def bm25_search(
 
     建議先用 tests/ 裡的 pnpm 三筆範例手動驗證（D1/D3 應勝 D2），再接 Pi / 跑 benchmark。
     """
-    raise NotImplementedError("bm25_search not implemented yet")
+    if not docs:
+      return []
+
+    tokenized = [tokenize(d["text"]) for d in docs]
+    lengths = [len(t) for t in tokenized]
+    avgdl = sum(lengths) / len(lengths)
+    N = len(docs)
+
+    q_tokens = tokenize(query)
+
+    df = {}
+    for token in set(q_tokens):
+        df[token] = sum(1 for t in tokenized if token in t)
+
+    results = []
+    for i, doc in enumerate(docs):
+        tf_map = Counter(tokenized[i])
+        dl = lengths[i]
+        score = 0.0
+        for token in q_tokens:
+            tf = tf_map.get(token, 0)
+            n = df.get(token, 0)
+            if n == 0:
+                continue
+            idf = math.log((N - n + 0.5) / (n + 0.5) + 1)
+            score += idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * dl / avgdl))
+        results.append({"id": doc["id"], "score": score})
+
+    results.sort(key=lambda x: x["score"], reverse=True)
+    return results[:k]

@@ -16,17 +16,30 @@ class JsonStore:
         檔案不存在、解析失敗、或內容不是 list（例如 {}）都一律視為空 list。
         提示：os.path.exists、open(...,encoding='utf-8')、json.load、isinstance(data, list)。"""
         # TODO: 換成真的讀檔。先給空 list 讓建構不會壞。
-        self.items = []
+        if not os.path.exists(self.path):
+            self.items = []
+            return
+        try:
+            with open(self.path, encoding='utf-8') as f:
+                data = json.load(f)
+            self.items = data if isinstance(data, list) else []
+        except Exception:
+            self.items = []
 
     def _persist(self) -> None:
         """TODO：把 self.items 寫回硬碟（JSON）。
         提示：json.dump(self.items, f, ensure_ascii=False, indent=2)。"""
-        raise NotImplementedError("JsonStore._persist not implemented yet")
-
+        with open(self.path, 'w', encoding='utf-8') as f:
+            json.dump(self.items, f, ensure_ascii=False, indent=2)
+    
     def add(self, obs: dict) -> bool:
         """TODO：新增一筆；id 已存在則跳過，回傳是否真的新增。新增後要 _persist()。
         提示：any(o['id'] == obs['id'] for o in self.items)。"""
-        raise NotImplementedError("JsonStore.add not implemented yet")
+        if any(o['id'] == obs['id'] for o in self.items):
+            return False
+        self.items.append(obs)
+        self._persist()
+        return True
 
     def all(self) -> list[dict]:
         return list(self.items)

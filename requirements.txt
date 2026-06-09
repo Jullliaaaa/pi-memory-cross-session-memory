@@ -3,5 +3,6 @@
 # 測試：
 pytest>=8.0
 
-# 任務二（選做）若做 hybrid retrieval，可用本地 embedding（與 HW3 相同）：
-# sentence-transformers>=2.7.0
+# 任務二（hybrid retrieval）：本地 embedding 與向量運算
+sentence-transformers>=2.7.0
+numpy>=1.24

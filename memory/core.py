@@ -53,10 +53,23 @@ def capture(obs: dict) -> None:
 
 
 def retrieve(query: str, k: int) -> list[dict]:
-    """(c) Retrieve：用 BM25 找出與 query 最相關的前 K 筆 Observation。"""
+    """(c) Retrieve：找出與 query 最相關的前 K 筆 Observation。
+
+    預設走確定性的純 BM25（核心測試與一般情況）。
+    任務二：設定環境變數 RETRIEVAL_MODE=weighted 或 rrf 時改走 hybrid_search，
+    benchmark 與 Pi demo 皆透過此開關使用同一條檢索路徑，確保一致與可重現。
+    未設定時行為與原本完全相同，核心單元測試不受影響。"""
     all_obs = _get_store().all()
     docs = [{"id": o["id"], "text": " ".join([o["summary"], *o.get("tags", [])])} for o in all_obs]
-    ranked = bm25_search(query, docs, k)
+
+    mode = os.environ.get("RETRIEVAL_MODE", "bm25")
+    if mode == "bm25":
+        ranked = bm25_search(query, docs, k)
+    else:
+        # 延遲 import：只有真的走 hybrid 才載入，未裝 sentence-transformers 不影響核心
+        from .hybrid import hybrid_search
+        ranked = hybrid_search(query, docs, k, mode=mode)
+
     by_id = {o["id"]: o for o in all_obs}
     return [by_id[r["id"]] for r in ranked if r["id"] in by_id]
 
