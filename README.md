@@ -39,7 +39,7 @@
 
 ```bash
 pip install -r requirements.txt
-pytest -q                 # 核心測試應全綠（13 passed）
+python -m pytest -q       # 核心測試應全綠（13 passed）
 ```
 
 核心(`bm25.py` / `store.py` / `core.py` / `cli.py`)只用標準函式庫;`sentence-transformers`、`numpy` 僅任務二 hybrid 需要。未安裝時,純 BM25 路徑與核心測試不受影響。
